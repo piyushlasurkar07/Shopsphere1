@@ -1,7 +1,7 @@
 #include "controllers/ReviewController.h"
 #include "services/AppServices.h"
 #include <json/json.h>
-
+#include <cmath>
 namespace ShopSphere {
 namespace Controllers {
 
