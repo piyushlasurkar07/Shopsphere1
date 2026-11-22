@@ -30,7 +30,7 @@ RUN git clone --depth 1 --recurse-submodules https://github.com/drogonframework/
     && cd drogon \
     && mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF .. \
-    && make -j$(nproc) \
+    && cmake --build . --parallel 1 \
     && make install \
     && ldconfig
 
@@ -40,7 +40,7 @@ COPY . .
 
 RUN mkdir build && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release .. \
-    && make -j$(nproc) \
+    && cmake --build . --parallel 1 \
     && ctest --output-on-failure
 
 # ----------------------------------------------------------------------------
