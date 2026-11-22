@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopSphere – Everything You Love, All in One Place</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-notice-bar text-center">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-truck-fast me-1 text-primary"></i> Free Express Shipping on orders over ₹999</span>
+            <div class="d-none d-md-flex align-items-center gap-3">
+                <span>Use code <strong>SHOPSPHERE10</strong> for 10% instant discount</span>
+                <span class="text-secondary">|</span>
+                <a href="/orders">Track Order</a>
+                <span class="text-secondary">|</span>
+                <a href="/admin/login" class="text-warning fw-semibold"><i class="fa-solid fa-lock me-1"></i> Admin Portal</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header py-3">
+        <div class="container">
+            <div class="row align-items-center g-2 g-md-4">
+                <!-- Brand Logo -->
+                <div class="col-auto">
+                    <a href="/" class="brand-logo text-decoration-none">
+                        <i class="fa-solid fa-bag-shopping text-primary"></i>
+                        <span>ShopSphere<span class="brand-dot">.</span></span>
+                    </a>
+                </div>
+
+                <!-- Natural Language & Trie-Powered Search Bar -->
+                <div class="col">
+                    <form action="/products" method="GET" class="search-container mx-auto">
+                        <input type="text" 
+                               name="q" 
+                               class="form-control search-input" 
+                               placeholder="Search products, brands, or try 'gaming laptop under 60000'..." 
+                               autocomplete="off">
+                        <button type="submit" class="search-btn" aria-label="Search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Nav Actions (Account, Wishlist, Cart) -->
+                <div class="col-auto d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <a href="#" class="nav-action-btn dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-user fs-5 text-secondary"></i>
+                            <div class="d-none d-lg-block text-start lh-1">
+                                <small class="text-muted d-block" style="font-size: 0.72rem;">Hello, <span id="user-greeting-name">Sign In</span></small>
+                                <span class="fw-bold" style="font-size: 0.85rem;">Account</span>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" id="nav-auth-links">
+                            <li class="p-3 text-center">
+                                <a href="/login" class="btn btn-primary w-100 fw-bold mb-2">Sign In</a>
+                                <small class="text-muted">New customer? <a href="/register" class="text-primary fw-semibold">Start here</a></small>
+                            </li>
+                            <li><hr class="dropdown-divider my-0"></li>
+                            <li><a class="dropdown-item py-2" href="/orders"><i class="fa-solid fa-box me-2 text-secondary"></i>Your Orders</a></li>
+                            <li><a class="dropdown-item py-2" href="/wishlist"><i class="fa-regular fa-heart me-2 text-secondary"></i>Wishlist</a></li>
+                        </ul>
+                    </div>
+
+                    <a href="/wishlist" class="nav-action-btn" title="Saved Wishlist">
+                        <i class="fa-regular fa-heart fs-5 text-secondary"></i>
+                        <span class="d-none d-lg-inline">Wishlist</span>
+                        <span class="badge-count wishlist-count-badge" style="display: none;">0</span>
+                    </a>
+
+                    <a href="/cart" class="nav-action-btn" title="Shopping Cart">
+                        <i class="fa-solid fa-cart-shopping fs-5 text-primary"></i>
+                        <span class="d-none d-lg-inline">Cart</span>
+                        <span class="badge-count cart-count-badge" style="display: none;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Navbar Category Links -->
+    <nav class="category-subnav">
+        <div class="container">
+            <ul class="category-subnav-list" id="category-subnav-list">
+                <li class="category-subnav-item fw-bold text-dark active">
+                    <a href="/products"><i class="fa-solid fa-bars text-secondary"></i> All Products</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Hero Banner Section -->
+        <section class="hero-banner-wrapper mb-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7 text-start">
+                    <span class="hero-tag"><i class="fa-solid fa-crown me-1 text-warning"></i> C++ High Performance Store</span>
+                    <h1 class="hero-title">Everything You Love, All in One Place.</h1>
+                    <p class="hero-subtitle">High-speed browsing powered by a native C++ backend, Trie search autocomplete, and intelligent graph recommendations.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/products" class="hero-btn">
+                            <span>Explore Catalog</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="/admin/login" class="btn btn-outline-light rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+                            <i class="fa-solid fa-gear text-warning"></i>
+                            <span>Admin Portal</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 hero-img-box d-none d-lg-flex">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&auto=format&fit=crop&q=80" 
+                         alt="ShopSphere Lifestyle" 
+                         class="hero-img img-fluid">
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="mb-5">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title"><i class="fa-solid fa-layer-group text-primary"></i> Popular Categories</h2>
+                    <div class="section-subtitle">Explore essential departments across our catalog</div>
+                </div>
+                <a href="/products" class="section-link">View All <i class="fa-solid fa-chevron-right fs-6"></i></a>
+            </div>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3" id="home-categories-grid">
+                <!-- Loaded dynamically from C++ API -->
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section class="mb-5">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title"><i class="fa-solid fa-star text-warning"></i> Featured Products</h2>
+                    <div class="section-subtitle">Actual verified products from our database</div>
+                </div>
+                <a href="/products" class="section-link">Browse All <i class="fa-solid fa-chevron-right fs-6"></i></a>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="home-featured-grid">
+                <!-- Loaded dynamically or shows clean empty state -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 mt-5">
+        <div class="container text-start">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-bag-shopping text-primary me-2"></i>ShopSphere.</h5>
+                    <p class="text-secondary small">Engineered with high-performance C++ Drogon web framework, real-time Trie search, binary max-heap order processing, and SQLite.</p>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="fw-bold text-white mb-3">Shop</h6>
+                    <ul class="list-unstyled text-secondary small">
+                        <li><a href="/products" class="text-secondary text-decoration-none">All Products</a></li>
+                        <li><a href="/cart" class="text-secondary text-decoration-none">My Cart</a></li>
+                        <li><a href="/wishlist" class="text-secondary text-decoration-none">Wishlist</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold text-white mb-3">Account</h6>
+                    <ul class="list-unstyled text-secondary small">
+                        <li><a href="/login" class="text-secondary text-decoration-none">Sign In</a></li>
+                        <li><a href="/register" class="text-secondary text-decoration-none">Register</a></li>
+                        <li><a href="/orders" class="text-secondary text-decoration-none">Track Orders</a></li>
+                        <li><a href="/admin/login" class="text-warning text-decoration-none">Administrator Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold text-white mb-3">Security &amp; Privacy</h6>
+                    <p class="text-secondary small">Salted cryptographic password hashing, session tokens, and prepared statements protection.</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-secondary small">
+                &copy; 2026 ShopSphere. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load Categories
+        fetch('/api/categories')
+            .then(r => r.json())
+            .then(d => {
+                if (d.success && d.categories && d.categories.length > 0) {
+                    const catGrid = document.getElementById('home-categories-grid');
+                    const subnav = document.getElementById('category-subnav-list');
+                    let gridHtml = '';
+                    d.categories.forEach(c => {
+                        gridHtml += `
+                            <div class="col">
+                                <a href="/products?category_id=${c.id}" class="category-card text-decoration-none">
+                                    <div class="category-img-wrap">
+                                        <img src="${c.image_url || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=300'}" alt="${c.name}" loading="lazy">
+                                    </div>
+                                    <h6 class="category-name">${c.name}</h6>
+                                </a>
+                            </div>`;
+                        
+                        const li = document.createElement('li');
+                        li.className = 'category-subnav-item';
+                        li.innerHTML = `<a href="/products?category_id=${c.id}">${c.name}</a>`;
+                        subnav.appendChild(li);
+                    });
+                    catGrid.innerHTML = gridHtml;
+                }
+            });
+
+        // Load Featured Products
+        fetch('/api/products')
+            .then(r => r.json())
+            .then(d => {
+                const grid = document.getElementById('home-featured-grid');
+                if (!d.success || !d.products || d.products.length === 0) {
+                    // Professional empty state as required by rule 12
+                    grid.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <div class="p-5 bg-light rounded-4 border">
+                                <i class="fa-solid fa-boxes-stacked fs-1 text-muted mb-3 d-block"></i>
+                                <h4 class="fw-bold text-navy">No Products in Catalog Yet</h4>
+                                <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">The store database is currently fresh and empty. Visit the Admin Portal to create your product catalog.</p>
+                                <a href="/admin/login" class="btn btn-primary fw-bold px-4 py-2 rounded-pill">
+                                    <i class="fa-solid fa-lock me-2"></i> Open Admin Portal
+                                </a>
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                let html = '';
+                d.products.slice(0, 8).forEach(p => {
+                    html += `
+                        <div class="col">
+                            <div class="product-card h-100 d-flex flex-column">
+                                <div class="product-img-box">
+                                    <a href="/product/${p.id}">
+                                        <img src="${p.image_url}" alt="${p.name}" loading="lazy">
+                                    </a>
+                                    ${p.discount_percent > 0 ? `<span class="badge-discount">${p.discount_percent}% OFF</span>` : ''}
+                                    <button type="button" class="wishlist-toggle-btn" onclick="toggleWishlist(${p.id}, this)" title="Save to Wishlist">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="product-body d-flex flex-column flex-grow-1 p-3">
+                                    <span class="product-brand text-muted small fw-bold text-uppercase">${p.brand}</span>
+                                    <a href="/product/${p.id}" class="text-decoration-none text-dark">
+                                        <h3 class="product-title fs-6 fw-bold my-1">${p.name}</h3>
+                                    </a>
+                                    <div class="product-rating small my-1">
+                                        <i class="fa-solid fa-star text-warning"></i>
+                                        <span>${p.rating} (${p.review_count})</span>
+                                    </div>
+                                    <div class="product-price-box mt-auto pt-2 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="product-price fw-bold text-navy fs-5">₹${p.price.toLocaleString('en-IN')}</span>
+                                            ${p.original_price > p.price ? `<span class="product-original-price text-muted text-decoration-line-through small ms-1">₹${p.original_price.toLocaleString('en-IN')}</span>` : ''}
+                                        </div>
+                                        <button onclick="addToCart(${p.id})" class="btn btn-outline-primary btn-sm rounded-circle" title="Add to Cart">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                grid.innerHTML = html;
+            });
+    });
+    </script>
+</body>
+</html>

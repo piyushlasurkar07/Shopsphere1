@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart – ShopSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <header class="main-header py-3 bg-white shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo text-decoration-none">
+                <i class="fa-solid fa-bag-shopping text-primary"></i>
+                <span>ShopSphere<span class="brand-dot">.</span></span>
+            </a>
+            <a href="/products" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-arrow-left me-1"></i> Continue Shopping</a>
+        </div>
+    </header>
+
+    <div class="container my-4">
+        <h4 class="fw-bold text-navy mb-4"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i> Shopping Cart</h4>
+
+        <div id="cart-loading" class="text-center py-5">
+            <i class="fa-solid fa-spinner fa-spin fs-2 text-primary"></i>
+            <p class="text-muted mt-2">Loading your cart items...</p>
+        </div>
+
+        <div id="cart-empty" class="card border-0 shadow-sm rounded-4 p-5 text-center d-none">
+            <i class="fa-solid fa-cart-shopping fs-1 text-muted mb-3 d-block"></i>
+            <h5 class="fw-bold text-navy">Your Cart is Currently Empty</h5>
+            <p class="text-muted small mb-4">Looks like you haven't added anything to your cart yet.</p>
+            <a href="/products" class="btn btn-primary fw-bold px-4 py-2 rounded-pill mx-auto">
+                <i class="fa-solid fa-bag-shopping me-2"></i> Start Shopping
+            </a>
+        </div>
+
+        <div id="cart-container" class="row g-4 d-none">
+            <!-- Items list -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <div id="cart-items-list" class="d-flex flex-column gap-3"></div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold text-navy mb-3">Order Summary</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Subtotal</span>
+                        <span class="fw-bold" id="cart-subtotal">₹0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Shipping Fee</span>
+                        <span id="cart-shipping">₹0</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold text-navy fs-5">Estimated Total</span>
+                        <span class="fw-bold text-navy fs-5 text-primary" id="cart-total">₹0</span>
+                    </div>
+                    <a href="/checkout" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm">
+                        Proceed to Checkout <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+    function loadCartData() {
+        fetch('/api/cart')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('cart-loading').classList.add('d-none');
+                if (!d.success || !d.items || d.items.length === 0) {
+                    document.getElementById('cart-empty').classList.remove('d-none');
+                    document.getElementById('cart-container').classList.add('d-none');
+                    return;
+                }
+
+                document.getElementById('cart-empty').classList.add('d-none');
+                document.getElementById('cart-container').classList.remove('d-none');
+
+                document.getElementById('cart-subtotal').textContent = '₹' + d.subtotal.toLocaleString('en-IN');
+                document.getElementById('cart-shipping').textContent = d.shipping_fee > 0 ? '₹' + d.shipping_fee.toLocaleString('en-IN') : 'FREE';
+                document.getElementById('cart-total').textContent = '₹' + d.total.toLocaleString('en-IN');
+
+                let html = '';
+                d.items.forEach(item => {
+                    html += `
+                        <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${item.image_url}" alt="${item.product_name}" style="width: 70px; height: 70px; object-fit: contain; border-radius: 8px;">
+                                <div>
+                                    <h6 class="fw-bold text-navy mb-1"><a href="/product/${item.product_id}" class="text-decoration-none text-dark">${item.product_name}</a></h6>
+                                    <small class="text-muted d-block">${item.product_brand}</small>
+                                    <span class="fw-bold text-primary">₹${item.price.toLocaleString('en-IN')}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="input-group input-group-sm" style="width: 110px;">
+                                    <button class="btn btn-outline-secondary" onclick="updateQty(${item.product_id}, ${item.quantity - 1})">-</button>
+                                    <input type="text" class="form-control text-center" value="${item.quantity}" readonly>
+                                    <button class="btn btn-outline-secondary" onclick="updateQty(${item.product_id}, ${item.quantity + 1})">+</button>
+                                </div>
+                                <span class="fw-bold text-navy" style="min-width: 80px; text-align: right;">₹${item.item_total.toLocaleString('en-IN')}</span>
+                                <button class="btn btn-link text-danger p-0 ms-2" onclick="removeItem(${item.product_id})" title="Remove"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('cart-items-list').innerHTML = html;
+            });
+    }
+
+    function updateQty(productId, qty) {
+        fetch('/api/cart/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: productId, quantity: qty })
+        })
+        .then(r => r.json())
+        .then(() => {
+            loadCartData();
+            updateCounters();
+        });
+    }
+
+    function removeItem(productId) {
+        fetch('/api/cart/remove', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(r => r.json())
+        .then(() => {
+            loadCartData();
+            updateCounters();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCartData);
+    </script>
+</body>
+</html>

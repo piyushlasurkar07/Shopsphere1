@@ -1,0 +1,26 @@
+# ============================================================================
+# ShopSphere Render Deployment Configuration
+# Web Service Specification (Docker runtime, persistent disk, environment vars)
+# ============================================================================
+
+services:
+  - type: web
+    name: shopsphere-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /api/categories
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/shopsphere.db
+      - key: SCHEMA_PATH
+        value: database/schema.sql
+    disk:
+      name: shopsphere-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -1,0 +1,29 @@
+{
+  "app": {
+    "name": "ShopSphere",
+    "version": "2.0.0",
+    "environment": "production"
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "threads": 4,
+    "document_root": "./frontend",
+    "upload_path": "./uploads"
+  },
+  "database": {
+    "path": "./database/shopsphere.db",
+    "schema": "./database/schema.sql",
+    "timeout_ms": 5000
+  },
+  "dsa": {
+    "lru_cache_capacity": 100,
+    "trie_autocomplete_limit": 10,
+    "graph_recommendations_limit": 6
+  },
+  "security": {
+    "session_lifetime_hours": 48,
+    "salt_length": 16,
+    "hash_iterations": 10000
+  }
+}

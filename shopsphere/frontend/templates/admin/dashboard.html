@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard – ShopSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/admin.css" rel="stylesheet">
+    <style>
+        .admin-nav-link { cursor: pointer; }
+        .tab-section { display: none; }
+        .tab-section.active { display: block; }
+        .dsa-metric-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="admin-body">
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <i class="fa-solid fa-bag-shopping text-primary"></i>
+            <span>ShopSphere</span>
+            <span class="badge-admin">Admin</span>
+        </div>
+
+        <ul class="admin-nav">
+            <li class="admin-nav-item">
+                <a onclick="showTab('dashboard')" class="admin-nav-link active" id="nav-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('priority-queue')" class="admin-nav-link" id="nav-priority-queue">
+                    <i class="fa-solid fa-layer-group text-warning"></i>
+                    <span>Priority Queue (Heap)</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('products')" class="admin-nav-link" id="nav-products">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('orders')" class="admin-nav-link" id="nav-orders">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                    <span>Customer Orders</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('reviews')" class="admin-nav-link" id="nav-reviews">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Customer Reviews</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('customers')" class="admin-nav-link" id="nav-customers">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a onclick="showTab('settings')" class="admin-nav-link" id="nav-settings">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Admin Security</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="p-3 border-top border-secondary-subtle">
+            <a href="/" class="btn btn-outline-light btn-sm w-100 mb-2" target="_blank">
+                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Live Store
+            </a>
+            <button onclick="adminLogout()" class="btn btn-danger btn-sm w-100">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+        <header class="admin-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-navy mb-0" id="current-tab-title">Analytics &amp; Performance Overview</h4>
+                <small class="text-muted">C++ Drogon Backend &amp; SQLite</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+                    <i class="fa-solid fa-circle-dot me-1"></i> Backend Online
+                </span>
+            </div>
+        </header>
+
+        <div class="admin-content p-4">
+
+            <!-- ============================================================ -->
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <!-- ============================================================ -->
+            <section id="tab-dashboard" class="tab-section active">
+                <!-- Top 4 Core Stat Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="admin-stat-card">
+                            <div class="stat-info">
+                                <h3 id="stat-revenue">₹0</h3>
+                                <p>Gross Store Revenue</p>
+                            </div>
+                            <div class="stat-icon-wrapper stat-icon-green"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="admin-stat-card">
+                            <div class="stat-info">
+                                <h3 id="stat-orders">0</h3>
+                                <p>Total Orders Placed</p>
+                            </div>
+                            <div class="stat-icon-wrapper stat-icon-blue"><i class="fa-solid fa-cart-check"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="admin-stat-card">
+                            <div class="stat-info">
+                                <h3 id="stat-products">0</h3>
+                                <p>Live Catalog Items</p>
+                            </div>
+                            <div class="stat-icon-wrapper stat-icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="admin-stat-card">
+                            <div class="stat-info">
+                                <h3 id="stat-customers">0</h3>
+                                <p>Registered Customers</p>
+                            </div>
+                            <div class="stat-icon-wrapper stat-icon-amber"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C++ Advanced DSA Telemetry Panel -->
+                <div class="admin-card mb-4">
+                    <div class="admin-card-header bg-navy text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white"><i class="fa-solid fa-microchip me-2 text-primary"></i> Advanced DSA &amp; AI Engines Telemetry (Live C++)</h5>
+                        <button class="btn btn-sm btn-outline-light" onclick="loadDashboardStats()"><i class="fa-solid fa-rotate me-1"></i> Refresh Metrics</button>
+                    </div>
+                    <div class="admin-card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="dsa-metric-card">
+                                    <div class="text-muted small fw-bold text-uppercase">1. LRU Cache</div>
+                                    <h4 class="fw-bold my-2 text-primary" id="dsa-cache-ratio">0.0%</h4>
+                                    <small class="text-secondary">Hits: <span id="dsa-cache-hits">0</span> | Misses: <span id="dsa-cache-misses">0</span></small><br>
+                                    <small class="text-secondary">Evictions: <span id="dsa-cache-evict">0</span> (Cap: 100)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dsa-metric-card">
+                                    <div class="text-muted small fw-bold text-uppercase">2. Prefix Trie</div>
+                                    <h4 class="fw-bold my-2 text-primary" id="dsa-trie-terms">0</h4>
+                                    <small class="text-secondary">Keywords &amp; tokens indexed</small><br>
+                                    <small class="text-success"><i class="fa-solid fa-bolt"></i> Realtime autocompletion</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dsa-metric-card">
+                                    <div class="text-muted small fw-bold text-uppercase">3. Recommendation Graph</div>
+                                    <h4 class="fw-bold my-2 text-primary" id="dsa-graph-nodes">0 Nodes</h4>
+                                    <small class="text-secondary"><span id="dsa-graph-edges">0</span> affinity edges</small><br>
+                                    <small class="text-secondary">Co-purchase + Brand + Category</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dsa-metric-card">
+                                    <div class="text-muted small fw-bold text-uppercase">4. Priority Queue (Heap)</div>
+                                    <h4 class="fw-bold my-2 text-warning" id="dsa-pq-size">0 Orders</h4>
+                                    <small class="text-secondary">Pending in Max-Heap</small><br>
+                                    <small class="text-secondary">Urgency + Value + Aging</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table on Dashboard -->
+                <div class="admin-card">
+                    <div class="admin-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Customer Transactions</h5>
+                        <button onclick="showTab('orders')" class="btn btn-sm btn-outline-primary fw-semibold">View All Orders</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Placed On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-recent-orders">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        <i class="fa-solid fa-inbox fs-3 d-block mb-2 text-secondary"></i>
+                                        No customer orders placed yet. The store database is clean.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 2: PRIORITY QUEUE (HEAP) -->
+            <!-- ============================================================ -->
+            <section id="tab-priority-queue" class="tab-section">
+                <div class="admin-card mb-4">
+                    <div class="admin-card-header d-flex justify-content-between align-items-center bg-light">
+                        <div>
+                            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-layer-group text-warning me-2"></i> Binary Max-Heap Order Priority Processing</h5>
+                            <small class="text-muted">Real-time scheduling algorithm prioritizes urgent shipping, high order value, and aging orders to prevent starvation.</small>
+                        </div>
+                        <button onclick="processNextPriorityOrder()" class="btn btn-warning fw-bold text-dark shadow-sm">
+                            <i class="fa-solid fa-forward-step me-1"></i> Process Highest Priority Order
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Rank in Heap</th>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Total Amount</th>
+                                    <th>Urgent Flag</th>
+                                    <th>Calculated Priority Score</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pq-orders-table">
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-clipboard-check fs-2 d-block mb-2 text-success"></i>
+                                        No pending orders in the Priority Queue. All customer orders are up to date!
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 3: PRODUCT MANAGEMENT -->
+            <!-- ============================================================ -->
+            <section id="tab-products" class="tab-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Product Catalog Management</h5>
+                    <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                        <i class="fa-solid fa-plus me-1"></i> Add New Product
+                    </button>
+                </div>
+
+                <div class="admin-card">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>Brand</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Rating</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-table">
+                                <tr>
+                                    <td colspan="9" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-box-open fs-2 d-block mb-2 text-secondary"></i>
+                                        No products found in the catalog. Click "Add New Product" above to create your first product.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 4: CUSTOMER ORDERS -->
+            <!-- ============================================================ -->
+            <section id="tab-orders" class="tab-section">
+                <div class="admin-card">
+                    <div class="admin-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Customer Orders &amp; Fulfillment</h5>
+                        <button onclick="loadAdminOrders()" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer Details</th>
+                                    <th>Shipping Address</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Current Status</th>
+                                    <th>Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-orders-table">
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-box fs-2 d-block mb-2 text-secondary"></i>
+                                        No orders in database. Orders placed by customers will appear here automatically.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 5: REVIEW MODERATION -->
+            <!-- ============================================================ -->
+            <section id="tab-reviews" class="tab-section">
+                <div class="admin-card">
+                    <div class="admin-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Customer Review Moderation</h5>
+                        <small class="text-muted">Filtered and sentiment-scored via backend C++ VADER algorithm</small>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Author</th>
+                                    <th>Rating</th>
+                                    <th>Review Content</th>
+                                    <th>Sentiment Score</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-reviews-table">
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-comments fs-2 d-block mb-2 text-secondary"></i>
+                                        No customer reviews submitted yet. The review section starts completely clean.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 6: CUSTOMERS -->
+            <!-- ============================================================ -->
+            <section id="tab-customers" class="tab-section">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h5 class="mb-0 fw-bold">Registered Customer Directory</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registered Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-customers-table">
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-users-slash fs-2 d-block mb-2 text-secondary"></i>
+                                        No registered customers yet. New signups will appear here dynamically.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- TAB 7: ADMIN SECURITY SETTINGS -->
+            <!-- ============================================================ -->
+            <section id="tab-settings" class="tab-section">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mx-auto" style="max-width: 500px;">
+                    <h5 class="fw-bold text-navy mb-3"><i class="fa-solid fa-key me-2 text-primary"></i> Update Administrator Credentials</h5>
+                    <form onsubmit="handleUpdateAdminCredentials(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">New Administrator Email</label>
+                            <input type="email" id="update-admin-email" class="form-control" required placeholder="Enter new email address">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">New Administrator Password</label>
+                            <input type="password" id="update-admin-password" class="form-control" required minlength="8" placeholder="Minimum 8 characters">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Update Credentials</button>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal: Add Product with C++ ML Assistants -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-4 border-0">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold text-navy">Add Product to Catalog</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="add-product-form" onsubmit="handleCreateProduct(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Product Title *</label>
+                            <input type="text" id="product-name" class="form-control" required placeholder="e.g. Dell XPS 15 OLED Laptop">
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Brand *</label>
+                                <input type="text" id="product-brand" class="form-control" required placeholder="e.g. Dell">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label small fw-semibold mb-0">Category *</label>
+                                    <a href="javascript:void(0)" onclick="autoDetectCategory()" class="small text-primary text-decoration-none fw-semibold">
+                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> AI Detect (Logistic Regression)
+                                    </a>
+                                </div>
+                                <select id="product-category" class="form-select mt-1" required>
+                                    <option value="1">Laptops &amp; Computers</option>
+                                    <option value="2">Smartphones &amp; Tablets</option>
+                                    <option value="3">Audio &amp; Headphones</option>
+                                    <option value="4">Smartwatches &amp; Wearables</option>
+                                    <option value="5">Cameras &amp; Photography</option>
+                                    <option value="6">Gaming Consoles &amp; Accessories</option>
+                                    <option value="7">Televisions &amp; Home Entertainment</option>
+                                    <option value="8">Home Appliances</option>
+                                    <option value="9">Computer Accessories &amp; Storage</option>
+                                    <option value="10">Smart Home Devices</option>
+                                </select>
+                                <div id="category-prediction-badge" class="mt-1"></div>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label small fw-semibold mb-0">Selling Price (₹) *</label>
+                                    <a href="javascript:void(0)" onclick="estimateMarketPrice()" class="small text-primary text-decoration-none fw-semibold">
+                                        <i class="fa-solid fa-calculator me-1"></i> RF Estimate
+                                    </a>
+                                </div>
+                                <input type="number" step="0.01" id="product-price" class="form-control mt-1" required placeholder="0.00">
+                                <div id="price-prediction-badge" class="mt-1"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Original Price (₹)</label>
+                                <input type="number" step="0.01" id="product-orig-price" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Initial Stock Quantity *</label>
+                                <input type="number" id="product-stock" class="form-control" required placeholder="10" value="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Product Description *</label>
+                            <textarea id="product-description" class="form-control" rows="3" required placeholder="Detailed specifications and key features..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Image URL *</label>
+                            <input type="url" id="product-image" class="form-control" required placeholder="https://..." value="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500">
+                        </div>
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="product-featured">
+                                <label class="form-check-label small" for="product-featured">Featured Product</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="product-trending">
+                                <label class="form-check-label small" for="product-trending">Trending</label>
+                            </div>
+                        </div>
+                        <button type="submit" id="add-product-btn" class="btn btn-primary w-100 py-2 fw-bold">Publish to Storefront</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+    <script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.admin-nav-link').forEach(el => el.classList.remove('active'));
+        
+        const target = document.getElementById('tab-' + tabId);
+        const link = document.getElementById('nav-' + tabId);
+        if (target) target.classList.add('active');
+        if (link) link.classList.add('active');
+
+        const titleMap = {
+            'dashboard': 'Analytics & Performance Overview',
+            'priority-queue': 'Binary Max-Heap Order Priority Processing',
+            'products': 'Product Catalog Management',
+            'orders': 'Customer Orders & Fulfillment',
+            'reviews': 'Customer Review Moderation',
+            'customers': 'Registered Customer Directory',
+            'settings': 'Administrator Security & Credentials'
+        };
+        document.getElementById('current-tab-title').textContent = titleMap[tabId] || 'Admin Portal';
+
+        if (tabId === 'dashboard') loadDashboardStats();
+        if (tabId === 'priority-queue') loadPriorityQueueSnapshot();
+        if (tabId === 'products') loadAdminProducts();
+        if (tabId === 'orders') loadAdminOrders();
+        if (tabId === 'reviews') loadAdminReviews();
+        if (tabId === 'customers') loadAdminCustomers();
+    }
+
+    function loadDashboardStats() {
+        fetch('/api/admin/stats')
+            .then(r => {
+                if (r.status === 401) { window.location.href = '/admin/login'; return null; }
+                return r.json();
+            })
+            .then(d => {
+                if (!d || !d.success) return;
+                document.getElementById('stat-revenue').textContent = '₹' + Number(d.total_revenue || 0).toLocaleString('en-IN');
+                document.getElementById('stat-orders').textContent = d.total_orders || 0;
+                document.getElementById('stat-products').textContent = d.total_products || 0;
+                document.getElementById('stat-customers').textContent = d.total_customers || 0;
+
+                if (d.dsa_telemetry) {
+                    const t = d.dsa_telemetry;
+                    document.getElementById('dsa-cache-ratio').textContent = Math.round((t.cache_hit_ratio || 0) * 100) + '%';
+                    document.getElementById('dsa-cache-hits').textContent = t.cache_hits || 0;
+                    document.getElementById('dsa-cache-misses').textContent = t.cache_misses || 0;
+                    document.getElementById('dsa-cache-evict').textContent = t.cache_evictions || 0;
+                    document.getElementById('dsa-trie-terms').textContent = t.trie_terms_indexed || 0;
+                    document.getElementById('dsa-graph-nodes').textContent = (t.graph_nodes || 0) + ' Nodes';
+                    document.getElementById('dsa-graph-edges').textContent = t.graph_edges || 0;
+                    document.getElementById('dsa-pq-size').textContent = (t.priority_queue_size || 0) + ' Orders';
+                }
+            }).catch(() => {});
+    }
+
+    function loadPriorityQueueSnapshot() {
+        fetch('/api/admin/orders/priority-queue')
+            .then(r => r.json())
+            .then(d => {
+                const tbody = document.getElementById('pq-orders-table');
+                if (!d.success || !d.queued_orders || d.queued_orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5 text-muted"><i class="fa-solid fa-clipboard-check fs-2 d-block mb-2 text-success"></i>No pending orders in the Priority Queue. All orders are processed!</td></tr>';
+                    return;
+                }
+                let html = '';
+                d.queued_orders.forEach((item, idx) => {
+                    html += `<tr>
+                        <td><span class="badge ${idx === 0 ? 'bg-danger' : 'bg-secondary'} rounded-pill">${idx + 1}</span></td>
+                        <td><strong>${item.order_number}</strong></td>
+                        <td>${item.customer_name}</td>
+                        <td>₹${item.total_amount.toLocaleString('en-IN')}</td>
+                        <td>${item.is_urgent ? '<span class="badge bg-danger">Express / Urgent</span>' : '<span class="badge bg-light text-muted border">Standard</span>'}</td>
+                        <td><strong class="text-primary">${Math.round(item.priority_score)} pts</strong></td>
+                        <td>${idx === 0 ? '<button onclick="processNextPriorityOrder()" class="btn btn-sm btn-warning fw-bold">Process Now</button>' : '<span class="text-muted small">Queued</span>'}</td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+    }
+
+    function loadAdminProducts() {
+        fetch('/api/admin/products')
+            .then(r => r.json())
+            .then(d => {
+                const tbody = document.getElementById('admin-products-table');
+                if (!d.success || !d.products || d.products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-muted"><i class="fa-solid fa-box-open fs-2 d-block mb-2 text-secondary"></i>No products found in the catalog.</td></tr>';
+                    return;
+                }
+                let html = '';
+                d.products.forEach(p => {
+                    html += `<tr>
+                        <td>${p.id}</td>
+                        <td><img src="${p.image_url}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px;"></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.brand}</td>
+                        <td>${p.category_name}</td>
+                        <td>₹${p.price.toLocaleString('en-IN')}</td>
+                        <td><span class="badge ${p.stock_quantity > 0 ? 'bg-success' : 'bg-danger'}">${p.stock_quantity}</span></td>
+                        <td><i class="fa-solid fa-star text-warning me-1"></i>${p.rating} (${p.review_count})</td>
+                        <td>
+                            <button onclick="deleteProduct(${p.id}, this.closest('tr'))" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+    }
+
+    function deleteProduct(id, row) {
+        if (!confirm('Are you sure you want to delete this product?')) return;
+        fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    showAdminToast('Product deleted.', 'success');
+                    if (row) row.remove();
+                }
+            });
+    }
+
+    function handleCreateProduct(e) {
+        e.preventDefault();
+        const payload = {
+            name: document.getElementById('product-name').value.trim(),
+            brand: document.getElementById('product-brand').value.trim(),
+            category_id: parseInt(document.getElementById('product-category').value),
+            price: parseFloat(document.getElementById('product-price').value),
+            original_price: parseFloat(document.getElementById('product-orig-price').value || document.getElementById('product-price').value),
+            stock_quantity: parseInt(document.getElementById('product-stock').value),
+            description: document.getElementById('product-description').value.trim(),
+            image_url: document.getElementById('product-image').value.trim(),
+            is_featured: document.getElementById('product-featured').checked,
+            is_trending: document.getElementById('product-trending').checked
+        };
+
+        fetch('/api/admin/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showAdminToast('Product created successfully!', 'success');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+                if (modal) modal.hide();
+                document.getElementById('add-product-form').reset();
+                loadAdminProducts();
+                loadDashboardStats();
+            } else {
+                showAdminToast(d.message || 'Failed to create product', 'error');
+            }
+        });
+    }
+
+    function loadAdminOrders() {
+        fetch('/api/admin/orders')
+            .then(r => r.json())
+            .then(d => {
+                const tbody = document.getElementById('all-orders-table');
+                const dashRecent = document.getElementById('dashboard-recent-orders');
+                if (!d.success || !d.orders || d.orders.length === 0) {
+                    const emptyRow = '<tr><td colspan="7" class="text-center py-5 text-muted"><i class="fa-solid fa-box fs-2 d-block mb-2 text-secondary"></i>No orders in database.</td></tr>';
+                    if (tbody) tbody.innerHTML = emptyRow;
+                    if (dashRecent) dashRecent.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><i class="fa-solid fa-inbox fs-3 d-block mb-2 text-secondary"></i>No customer orders placed yet. The store database is clean.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                let recentHtml = '';
+                d.orders.forEach((o, idx) => {
+                    const statusBadge = o.order_status === 'Delivered' ? 'bg-success' : (o.order_status === 'Cancelled' ? 'bg-danger' : (o.order_status === 'Processing' ? 'bg-info' : 'bg-warning text-dark'));
+                    html += `<tr>
+                        <td><strong>${o.order_number}</strong><br><small class="text-muted">${o.created_at}</small></td>
+                        <td>${o.customer_name}<br><small class="text-muted">${o.customer_email}</small></td>
+                        <td><small>${o.shipping_address}</small></td>
+                        <td><strong>₹${o.total_amount.toLocaleString('en-IN')}</strong></td>
+                        <td><span class="badge bg-light text-dark border">${o.payment_method}</span></td>
+                        <td><span class="badge ${statusBadge}">${o.order_status}</span></td>
+                        <td>
+                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="form-select form-select-sm">
+                                <option value="Pending" ${o.order_status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Processing" ${o.order_status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Shipped" ${o.order_status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Delivered" ${o.order_status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="Cancelled" ${o.order_status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </td>
+                    </tr>`;
+
+                    if (idx < 5) {
+                        recentHtml += `<tr>
+                            <td><strong>${o.order_number}</strong></td>
+                            <td>${o.customer_name}</td>
+                            <td>₹${o.total_amount.toLocaleString('en-IN')}</td>
+                            <td><span class="badge ${statusBadge}">${o.order_status}</span></td>
+                            <td><span class="badge bg-light text-dark border">${o.payment_method}</span></td>
+                            <td><small class="text-muted">${o.created_at}</small></td>
+                        </tr>`;
+                    }
+                });
+
+                if (tbody) tbody.innerHTML = html;
+                if (dashRecent) dashRecent.innerHTML = recentHtml;
+            });
+    }
+
+    function loadAdminReviews() {
+        fetch('/api/admin/reviews')
+            .then(r => r.json())
+            .then(d => {
+                const tbody = document.getElementById('all-reviews-table');
+                if (!d.success || !d.reviews || d.reviews.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5 text-muted"><i class="fa-solid fa-comments fs-2 d-block mb-2 text-secondary"></i>No customer reviews submitted yet.</td></tr>';
+                    return;
+                }
+                let html = '';
+                d.reviews.forEach(r => {
+                    const sentBadge = r.sentiment === 'Positive' ? 'bg-success' : (r.sentiment === 'Negative' ? 'bg-danger' : 'bg-secondary');
+                    html += `<tr>
+                        <td><strong>${r.product_name}</strong></td>
+                        <td>${r.user_name}</td>
+                        <td><i class="fa-solid fa-star text-warning me-1"></i>${r.rating}/5</td>
+                        <td><strong class="d-block">${r.title || ''}</strong><small class="text-muted">${r.text}</small></td>
+                        <td><span class="badge ${sentBadge}">${r.sentiment} (${r.sentiment_score})</span></td>
+                        <td><small class="text-muted">${r.created_at}</small></td>
+                        <td>
+                            <button onclick="deleteCustomerReview(${r.id}, this.closest('tr'))" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+    }
+
+    function loadAdminCustomers() {
+        fetch('/api/admin/customers')
+            .then(r => r.json())
+            .then(d => {
+                const tbody = document.getElementById('all-customers-table');
+                if (!d.success || !d.customers || d.customers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted"><i class="fa-solid fa-users-slash fs-2 d-block mb-2 text-secondary"></i>No registered customers yet.</td></tr>';
+                    return;
+                }
+                let html = '';
+                d.customers.forEach(c => {
+                    html += `<tr>
+                        <td>${c.id}</td>
+                        <td><strong>${c.full_name}</strong></td>
+                        <td>${c.username}</td>
+                        <td>${c.email}</td>
+                        <td>${c.phone || '-'}</td>
+                        <td><small class="text-muted">${c.created_at}</small></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+    }
+
+    function handleUpdateAdminCredentials(e) {
+        e.preventDefault();
+        const email = document.getElementById('update-admin-email').value.trim();
+        const password = document.getElementById('update-admin-password').value;
+
+        fetch('/api/admin/credentials', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showAdminToast('Administrator credentials updated successfully!', 'success');
+            } else {
+                showAdminToast(d.message || 'Failed to update credentials.', 'error');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDashboardStats();
+    });
+    </script>
+</body>
+</html>

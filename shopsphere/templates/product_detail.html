@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details – ShopSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo text-decoration-none">
+                <i class="fa-solid fa-bag-shopping text-primary"></i>
+                <span>ShopSphere<span class="brand-dot">.</span></span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/products" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-arrow-left me-1"></i> Catalog</a>
+                <a href="/wishlist" class="nav-action-btn"><i class="fa-regular fa-heart fs-5"></i><span class="badge-count wishlist-count-badge" style="display:none;">0</span></a>
+                <a href="/cart" class="nav-action-btn"><i class="fa-solid fa-cart-shopping fs-5 text-primary"></i><span class="badge-count cart-count-badge" style="display:none;">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        <div id="product-loading" class="text-center py-5">
+            <i class="fa-solid fa-spinner fa-spin fs-2 text-primary"></i>
+            <p class="text-muted mt-2">Loading product via C++ LRU Cache...</p>
+        </div>
+
+        <div id="product-content" class="d-none">
+            <!-- Product Overview -->
+            <div class="row g-5 mb-5">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-3 text-center bg-white">
+                        <img id="detail-image" src="" alt="Product Image" class="img-fluid rounded-3" style="max-height: 440px; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ps-lg-3">
+                        <span id="detail-brand" class="badge bg-light text-primary border text-uppercase mb-2"></span>
+                        <h1 id="detail-name" class="fw-bold text-navy h3 mb-2"></h1>
+                        
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-warning text-dark px-2 py-1">
+                                <i class="fa-solid fa-star me-1"></i><span id="detail-rating">4.0</span>
+                            </span>
+                            <span class="text-muted small">(<span id="detail-reviews-count">0</span> verified customer reviews)</span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex align-items-baseline gap-2">
+                                <span class="h2 fw-bold text-navy" id="detail-price">₹0</span>
+                                <span class="text-muted text-decoration-line-through fs-5" id="detail-orig-price"></span>
+                                <span class="badge bg-danger ms-2" id="detail-discount" style="display:none;"></span>
+                            </div>
+                            <small class="text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> Inclusive of all taxes</small>
+                        </div>
+
+                        <p id="detail-description" class="text-secondary mb-4"></p>
+
+                        <div class="mb-4">
+                            <span class="small fw-semibold text-dark d-block mb-1">Availability:</span>
+                            <span id="detail-stock-badge" class="badge"></span>
+                        </div>
+
+                        <div class="d-flex gap-3 mb-4">
+                            <div class="input-group" style="width: 130px;">
+                                <button class="btn btn-outline-secondary" onclick="changeQty(-1)">-</button>
+                                <input type="number" id="detail-quantity" class="form-control text-center" value="1" min="1">
+                                <button class="btn btn-outline-secondary" onclick="changeQty(1)">+</button>
+                            </div>
+                            <button id="add-to-cart-btn" onclick="handleAddToCart()" class="btn btn-primary px-4 py-2 fw-bold rounded-pill flex-grow-1 shadow-sm">
+                                <i class="fa-solid fa-cart-shopping me-2"></i> Add to Cart
+                            </button>
+                            <button id="wishlist-btn" onclick="handleToggleWishlist()" class="btn btn-outline-danger rounded-circle px-3" title="Save to Wishlist">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Reviews Section -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-navy mb-1">Verified Customer Reviews</h4>
+                        <small class="text-muted">Calculated average rating: <span id="reviews-avg-rating" class="fw-bold text-primary">0.0</span> / 5.0</small>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold" onclick="document.getElementById('review-form-card').scrollIntoView({behavior: 'smooth'})">
+                        <i class="fa-solid fa-pen me-1"></i> Write a Review
+                    </button>
+                </div>
+
+                <!-- Reviews List Container -->
+                <div id="reviews-list-container">
+                    <!-- Populated dynamically or shows clean empty state -->
+                </div>
+
+                <!-- Submit Review Form Card -->
+                <div id="review-form-card" class="bg-light rounded-4 p-4 mt-4 border">
+                    <h5 class="fw-bold text-navy mb-3">Share Your Experience</h5>
+                    <form id="submit-review-form" onsubmit="handleSubmitReview(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Your Rating *</label>
+                            <div class="star-rating-select fs-4 text-warning" style="cursor: pointer;">
+                                <i class="fa-solid fa-star" data-value="1"></i>
+                                <i class="fa-solid fa-star" data-value="2"></i>
+                                <i class="fa-solid fa-star" data-value="3"></i>
+                                <i class="fa-solid fa-star" data-value="4"></i>
+                                <i class="fa-solid fa-star" data-value="5"></i>
+                            </div>
+                            <input type="hidden" id="selected-star-value" value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Review Title</label>
+                            <input type="text" id="review-title" class="form-control" placeholder="Summarize your review">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Review Details *</label>
+                            <textarea id="review-text" class="form-control" rows="3" placeholder="Tell us about the quality, delivery, and overall satisfaction..." required></textarea>
+                            <div id="sentiment-preview-badge"></div>
+                        </div>
+                        <button type="submit" id="submit-review-btn" class="btn btn-primary fw-bold px-4 py-2 rounded-pill">
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- C++ Graph-Based Recommendations Section -->
+            <div class="mb-5">
+                <div class="section-header">
+                    <div>
+                        <h4 class="section-title"><i class="fa-solid fa-diagram-project text-primary me-2"></i> Graph-Based Recommendations</h4>
+                        <div class="section-subtitle">Products dynamically connected via category affinity, brand affinity, and co-purchase interactions</div>
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4" id="graph-recommendations-grid">
+                    <!-- Dynamically populated via C++ ProductGraph traversal -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+    // Extract Product ID from URL path: /product/123
+    const pathParts = window.location.pathname.split('/');
+    const productId = parseInt(pathParts[pathParts.length - 1]) || 1;
+
+    let currentProduct = null;
+
+    function changeQty(delta) {
+        const inp = document.getElementById('detail-quantity');
+        let val = parseInt(inp.value) + delta;
+        if (val < 1) val = 1;
+        inp.value = val;
+    }
+
+    function handleAddToCart() {
+        if (!currentProduct) return;
+        const qty = parseInt(document.getElementById('detail-quantity').value) || 1;
+        addToCart(currentProduct.id, qty);
+    }
+
+    function handleToggleWishlist() {
+        if (!currentProduct) return;
+        toggleWishlist(currentProduct.id, document.getElementById('wishlist-btn'));
+    }
+
+    function loadProduct() {
+        fetch(`/api/products/${productId}`)
+            .then(r => {
+                if (r.status === 404) {
+                    document.getElementById('product-loading').innerHTML = '<div class="alert alert-warning">Product not found. <a href="/products">Browse all products</a></div>';
+                    return null;
+                }
+                return r.json();
+            })
+            .then(p => {
+                if (!p) return;
+                currentProduct = p;
+                document.getElementById('product-loading').classList.add('d-none');
+                document.getElementById('product-content').classList.remove('d-none');
+
+                document.getElementById('detail-name').textContent = p.name;
+                document.getElementById('detail-brand').textContent = p.brand;
+                document.getElementById('detail-image').src = p.image_url;
+                document.getElementById('detail-rating').textContent = p.rating;
+                document.getElementById('detail-reviews-count').textContent = p.review_count;
+                document.getElementById('detail-price').textContent = '₹' + p.price.toLocaleString('en-IN');
+                document.getElementById('detail-description').textContent = p.description;
+
+                if (p.original_price > p.price) {
+                    document.getElementById('detail-orig-price').textContent = '₹' + p.original_price.toLocaleString('en-IN');
+                }
+                if (p.discount_percent > 0) {
+                    const badge = document.getElementById('detail-discount');
+                    badge.textContent = p.discount_percent + '% OFF';
+                    badge.style.display = 'inline-block';
+                }
+
+                const stockBadge = document.getElementById('detail-stock-badge');
+                if (p.stock_quantity > 0) {
+                    stockBadge.className = 'badge bg-success-subtle text-success border border-success';
+                    stockBadge.textContent = `In Stock (${p.stock_quantity} units available)`;
+                } else {
+                    stockBadge.className = 'badge bg-danger-subtle text-danger border border-danger';
+                    stockBadge.textContent = 'Out of Stock';
+                    document.getElementById('add-to-cart-btn').disabled = true;
+                }
+
+                loadReviews();
+                loadRecommendations();
+            });
+    }
+
+    function loadReviews() {
+        fetch(`/api/products/${productId}/reviews`)
+            .then(r => r.json())
+            .then(d => {
+                const container = document.getElementById('reviews-list-container');
+                document.getElementById('reviews-avg-rating').textContent = d.average_rating || '0.0';
+
+                if (!d.success || !d.reviews || d.reviews.length === 0) {
+                    // Empty state as strictly required by rule 10 & rule 12
+                    container.innerHTML = `
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa-regular fa-comment-dots fs-3 d-block mb-2 text-secondary"></i>
+                            No customer reviews yet. Be the first to share your experience!
+                        </div>`;
+                    return;
+                }
+
+                let html = '<div class="d-flex flex-column gap-3">';
+                d.reviews.forEach(r => {
+                    const sentClass = r.sentiment === 'Positive' ? 'success' : (r.sentiment === 'Negative' ? 'danger' : 'secondary');
+                    html += `
+                        <div class="p-3 bg-white rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <strong class="text-dark">${r.user_name}</strong>
+                                    ${r.verified_purchase ? '<span class="badge bg-success-subtle text-success small ms-2"><i class="fa-solid fa-check"></i> Verified Purchase</span>' : ''}
+                                </div>
+                                <span class="badge bg-${sentClass}-subtle text-${sentClass} border">${r.sentiment}</span>
+                            </div>
+                            <div class="text-warning small mb-2">
+                                ${'<i class="fa-solid fa-star"></i>'.repeat(r.rating)}
+                                ${'<i class="fa-regular fa-star"></i>'.repeat(5 - r.rating)}
+                                <small class="text-muted ms-2">${r.created_at}</small>
+                            </div>
+                            ${r.title ? `<h6 class="fw-bold mb-1">${r.title}</h6>` : ''}
+                            <p class="text-secondary small mb-0">${r.text}</p>
+                        </div>`;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+    }
+
+    function handleSubmitReview(e) {
+        e.preventDefault();
+        const rating = parseInt(document.getElementById('selected-star-value').value) || 5;
+        const title = document.getElementById('review-title').value.trim();
+        const text = document.getElementById('review-text').value.trim();
+        const btn = document.getElementById('submit-review-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Submitting...';
+
+        fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                rating: rating,
+                title: title,
+                text: text
+            })
+        })
+        .then(r => r.json())
+        .then(d => {
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Review';
+            if (d.success) {
+                showToast('Review submitted successfully!', 'success');
+                document.getElementById('submit-review-form').reset();
+                document.getElementById('sentiment-preview-badge').innerHTML = '';
+                loadReviews();
+            } else {
+                showToast(d.message || 'Failed to submit review.', 'error');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Submit Review';
+            showToast('Server error while submitting review.', 'error');
+        });
+    }
+
+    function loadRecommendations() {
+        fetch(`/api/recommendations/${productId}`)
+            .then(r => r.json())
+            .then(d => {
+                const grid = document.getElementById('graph-recommendations-grid');
+                if (!d.success || !d.recommendations || d.recommendations.length === 0) {
+                    grid.innerHTML = '<div class="col-12 text-muted small">No related items currently connected in recommendation graph.</div>';
+                    return;
+                }
+
+                let html = '';
+                d.recommendations.forEach(r => {
+                    html += `
+                        <div class="col">
+                            <div class="product-card h-100 d-flex flex-column">
+                                <div class="product-img-box">
+                                    <a href="/product/${r.id}"><img src="${r.image_url}" alt="${r.name}" loading="lazy"></a>
+                                </div>
+                                <div class="product-body p-3 d-flex flex-column flex-grow-1">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary small mb-1 align-self-start">${r.recommendation_reason}</span>
+                                    <a href="/product/${r.id}" class="text-decoration-none text-dark"><h6 class="fw-bold my-1 fs-6">${r.name}</h6></a>
+                                    <div class="product-price fw-bold text-navy mt-auto">₹${r.price.toLocaleString('en-IN')}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                grid.innerHTML = html;
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders – ShopSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <header class="main-header py-3 bg-white shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo text-decoration-none">
+                <i class="fa-solid fa-bag-shopping text-primary"></i>
+                <span>ShopSphere<span class="brand-dot">.</span></span>
+            </a>
+            <a href="/products" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-arrow-left me-1"></i> Continue Shopping</a>
+        </div>
+    </header>
+
+    <div class="container my-4">
+        <!-- Live Order Tracking Bar -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-location-crosshairs text-primary me-2"></i> Track Any Order</h6>
+            <div class="input-group" style="max-width: 500px;">
+                <input type="text" id="track-input" class="form-control" placeholder="Enter Order # or Tracking # (e.g. SS-...)">
+                <button onclick="handleTrackOrder()" class="btn btn-primary fw-bold">Track</button>
+            </div>
+            <div id="track-result" class="mt-3 d-none"></div>
+        </div>
+
+        <h4 class="fw-bold text-navy mb-4"><i class="fa-solid fa-box me-2 text-primary"></i> Order History</h4>
+
+        <div id="orders-loading" class="text-center py-5">
+            <i class="fa-solid fa-spinner fa-spin fs-2 text-primary"></i>
+            <p class="text-muted mt-2">Loading your orders...</p>
+        </div>
+
+        <div id="orders-empty" class="card border-0 shadow-sm rounded-4 p-5 text-center d-none">
+            <i class="fa-solid fa-box-open fs-1 text-muted mb-3 d-block"></i>
+            <h5 class="fw-bold text-navy">No Orders Placed Yet</h5>
+            <p class="text-muted small mb-4">You have not completed any purchases. When you place an order, it will appear here in real-time.</p>
+            <a href="/products" class="btn btn-primary fw-bold px-4 py-2 rounded-pill mx-auto">
+                <i class="fa-solid fa-bag-shopping me-2"></i> Start Shopping
+            </a>
+        </div>
+
+        <div id="orders-container" class="d-flex flex-column gap-3 d-none">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+    function loadOrders() {
+        fetch('/api/orders')
+            .then(r => {
+                if (r.status === 401) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                return r.json();
+            })
+            .then(d => {
+                document.getElementById('orders-loading').classList.add('d-none');
+                if (!d || !d.success || !d.orders || d.orders.length === 0) {
+                    document.getElementById('orders-empty').classList.remove('d-none');
+                    document.getElementById('orders-container').classList.add('d-none');
+                    return;
+                }
+
+                document.getElementById('orders-empty').classList.add('d-none');
+                const container = document.getElementById('orders-container');
+                container.classList.remove('d-none');
+
+                let html = '';
+                d.orders.forEach(o => {
+                    const statusBadge = o.order_status === 'Delivered' ? 'bg-success' : (o.order_status === 'Cancelled' ? 'bg-danger' : (o.order_status === 'Processing' ? 'bg-info' : 'bg-warning text-dark'));
+                    const canCancel = (o.order_status === 'Pending' || o.order_status === 'Processing');
+
+                    html += `
+                        <div class="card border-0 shadow-sm rounded-4 p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
+                                <div>
+                                    <span class="text-muted small">Order Number:</span>
+                                    <h6 class="fw-bold text-navy mb-0">${o.order_number}</h6>
+                                    <small class="text-muted">${o.created_at}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge ${statusBadge} px-3 py-2 fs-6 mb-1">${o.order_status}</span>
+                                    <small class="d-block text-muted">Tracking: <strong>${o.tracking_number}</strong></small>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div>
+                                    <div class="small text-muted">Payment: <strong>${o.payment_method}</strong> (${o.payment_status})</div>
+                                    <div class="small text-muted">Items: <strong>${o.items_count} item(s)</strong></div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="fs-5 fw-bold text-navy">₹${o.total_amount.toLocaleString('en-IN')}</span>
+                                    ${canCancel ? `<button onclick="cancelOrder(${o.id})" class="btn btn-outline-danger btn-sm rounded-pill fw-bold">Cancel Order</button>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            });
+    }
+
+    function cancelOrder(id) {
+        if (!confirm('Are you sure you want to cancel this order? Stock will be restored.')) return;
+        fetch(`/api/orders/${id}/cancel`, { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    showToast('Order cancelled.', 'info');
+                    loadOrders();
+                } else {
+                    showToast(d.message || 'Unable to cancel order.', 'error');
+                }
+            });
+    }
+
+    function handleTrackOrder() {
+        const trk = document.getElementById('track-input').value.trim();
+        const resBox = document.getElementById('track-result');
+        if (!trk) return;
+
+        fetch(`/api/orders/track?number=${encodeURIComponent(trk)}`)
+            .then(r => r.json())
+            .then(d => {
+                resBox.classList.remove('d-none');
+                if (d.success) {
+                    resBox.innerHTML = `
+                        <div class="alert alert-success small mb-0">
+                            <strong>Order #${d.order_number}</strong> is currently: <span class="badge bg-success ms-1">${d.status}</span><br>
+                            Recipient: <strong>${d.customer_name}</strong> | Amount: <strong>₹${d.total_amount.toLocaleString('en-IN')}</strong> | Ordered on: ${d.created_at}
+                        </div>`;
+                } else {
+                    resBox.innerHTML = `<div class="alert alert-warning small mb-0">${d.message}</div>`;
+                }
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+</body>
+</html>
