@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
-
+#include <cmath>
 namespace ShopSphere {
 namespace Database {
 
